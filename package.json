@@ -1,20 +1,17 @@
 {
-	"name": "package",
+	"name": "nodash",
 	"version": "0.0.0",
+	"private": true,
 	"type": "module",
-	"main": "dist/index.js",
 	"scripts": {
-		"build": "swc src -d dist --strip-leading-paths",
-		"build:type": "tsc",
-		"start": "node --enable-source-maps --env-file .env dist/index.js",
-		"start:dev": "tsx --env-file .env ./src/index.ts"
+		"dev:backend": "pnpm --filter @nodash/backend dev",
+		"build:backend": "pnpm --filter @nodash/backend build",
+		"build:frontend": "pnpm --filter @nodash/frontend build",
+		"build": "pnpm -r build",
+		"format": "prettier --write ."
 	},
 	"devDependencies": {
-		"@swc/cli": "^0.7.10",
-		"@swc/core": "^1.15.8",
-		"@types/node": "^25.0.8",
 		"prettier": "^3.7.4",
-		"tsx": "^4.21.0",
 		"typescript": "^5.9.3"
 	}
 }

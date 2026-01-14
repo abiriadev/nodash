@@ -1,0 +1,13 @@
+{
+	"compilerOptions": {
+		"target": "es2024",
+		"module": "preserve",
+		"experimentalDecorators": true,
+		"noEmit": true,
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+		"verbatimModuleSyntax": true,
+		"skipLibCheck": true
+	}
+}
