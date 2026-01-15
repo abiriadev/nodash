@@ -1,3 +1,8 @@
+---
+trigger: model_decision
+description: follow this detailed full requirement specification as much as possible.
+---
+
 # nodash - Requirements Document
 
 **Version**: 1.2
