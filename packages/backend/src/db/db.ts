@@ -16,6 +16,14 @@ export class Db {
 		this.initSchema()
 	}
 
+	public close() {
+		this.db.close()
+	}
+
+	public transaction<T>(fn: () => T): T {
+		return this.db.transaction(fn)()
+	}
+
 	private initSchema() {
 		this.db.exec(`
     CREATE TABLE IF NOT EXISTS notes (
