@@ -7,7 +7,7 @@ import type {
 	UpdateNoteRequest,
 } from '../types/note.schema.js'
 
-export class NoteDatabase {
+export class Db {
 	private db: Database.Database
 
 	constructor(dbPath: string = 'notes.db') {

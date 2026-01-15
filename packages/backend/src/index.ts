@@ -1,26 +1,28 @@
-import { Hono } from 'hono'
+import { Hono, type Env } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { swaggerUI } from '@hono/swagger-ui'
 import { serve } from '@hono/node-server'
 import { openAPIRouteHandler } from 'hono-openapi'
-import { NoteDatabase } from './db/db.js'
+import { Db } from './db/db.js'
 import notes from './routes/notes.js'
 
-type Variables = {
-	db: NoteDatabase
+interface InjectedEnv extends Env {
+	Variables: {
+		db: Db
+	}
 }
 
-const app = new Hono<{ Variables: Variables }>()
+const app = new Hono<InjectedEnv>()
 
 // Initialize database
-const dbInstance = new NoteDatabase()
+const db = new Db()
 
 // Middleware
 app.use('*', logger())
 app.use('*', cors())
 app.use('*', async (c, next) => {
-	c.set('db', dbInstance)
+	c.set('db', db)
 	await next()
 })
 
