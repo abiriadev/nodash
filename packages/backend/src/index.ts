@@ -3,6 +3,7 @@ import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { swaggerUI } from '@hono/swagger-ui'
 import { serve } from '@hono/node-server'
+import { openAPIRouteHandler } from 'hono-openapi'
 import { initDb } from './db/db.js'
 import notes from './routes/notes.js'
 
@@ -21,17 +22,25 @@ app.route('/api/notes', notes)
 // Swagger UI
 app.get('/docs', swaggerUI({ url: '/openapi.json' }))
 
-// OpenAPI Spec (Minimal for now, can be extended with @hono/zod-openapi)
-app.get('/openapi.json', (c: any) => {
-	return c.json({
-		openapi: '3.0.0',
-		info: {
-			title: 'nodash API',
-			version: '1.0.0',
+// OpenAPI Spec
+app.get(
+	'/openapi.json',
+	openAPIRouteHandler(app, {
+		documentation: {
+			info: {
+				title: 'nodash API',
+				version: '1.0.0',
+				description: 'API for managing notes with FTS5 search',
+			},
+			servers: [
+				{
+					url: 'http://localhost:8080',
+					description: 'Development Server',
+				},
+			],
 		},
-		paths: {}, // Routes are defined in notes.ts
-	})
-})
+	}),
+)
 
 app.get('/', (c: any) => c.text('nodash API is running'))
 

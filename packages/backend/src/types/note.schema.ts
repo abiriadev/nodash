@@ -1,3 +1,4 @@
+import { isoDatetimeToDate } from '@/utils'
 import { z } from 'zod'
 
 // Domain types (application layer)
@@ -72,7 +73,7 @@ export const sortQuerySchema = z.object({
 })
 
 export const listNotesQuerySchema = paginationQuerySchema
-	.extend(sortQuerySchema)
+	.merge(sortQuerySchema)
 	.extend({
 		archived: z.coerce
 			.string()
@@ -86,8 +87,8 @@ export const noteResponseSchema = z.object({
 	id: z.uuid(),
 	title: z.string(),
 	content: z.string(),
-	createdAt: z.date(),
-	updatedAt: z.date(),
+	createdAt: isoDatetimeToDate,
+	updatedAt: isoDatetimeToDate,
 	archived: z.boolean(),
 })
 
