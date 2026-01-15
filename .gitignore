@@ -7,3 +7,5 @@ ignored
 .env.*
 dist
 *.log
+*.db-shm
+*.db-wal
