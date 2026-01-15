@@ -4,17 +4,25 @@ import { logger } from 'hono/logger'
 import { swaggerUI } from '@hono/swagger-ui'
 import { serve } from '@hono/node-server'
 import { openAPIRouteHandler } from 'hono-openapi'
-import { initDb } from './db/db.js'
+import { NoteDatabase } from './db/db.js'
 import notes from './routes/notes.js'
 
-const app = new Hono()
+type Variables = {
+	db: NoteDatabase
+}
+
+const app = new Hono<{ Variables: Variables }>()
 
 // Initialize database
-initDb()
+const dbInstance = new NoteDatabase()
 
 // Middleware
 app.use('*', logger())
 app.use('*', cors())
+app.use('*', async (c, next) => {
+	c.set('db', dbInstance)
+	await next()
+})
 
 // Routes
 app.route('/api/notes', notes)

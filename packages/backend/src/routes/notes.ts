@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { describeRoute, resolver, validator } from 'hono-openapi'
-import * as db from '../db/db.js'
+import type { NoteDatabase } from '../db/db.js'
 import {
 	createNoteSchema,
 	updateNoteSchema,
@@ -11,7 +11,7 @@ import {
 	notesListResponseSchema,
 } from '../types/note.schema.js'
 
-const notes = new Hono()
+const notes = new Hono<{ Variables: { db: NoteDatabase } }>()
 
 // List all notes
 notes.get(
@@ -32,7 +32,7 @@ notes.get(
 	validator('query', listNotesQuerySchema),
 	c => {
 		const query = c.req.valid('query')
-		const result = db.getNotes({
+		const result = c.get('db').getNotes({
 			archived: query.archived,
 			limit: query.limit,
 			offset: query.offset,
@@ -67,7 +67,9 @@ notes.get(
 	validator('query', searchQuerySchema),
 	c => {
 		const query = c.req.valid('query')
-		const result = db.searchNotes(query.q, query.limit, query.offset)
+		const result = c
+			.get('db')
+			.searchNotes(query.q, query.limit, query.offset)
 
 		return c.json({
 			...result,
@@ -100,7 +102,7 @@ notes.get(
 	validator('param', noteIdSchema),
 	c => {
 		const { id } = c.req.valid('param')
-		const note = db.getNoteById(id)
+		const note = c.get('db').getNoteById(id)
 
 		if (!note) {
 			return c.json(
@@ -136,7 +138,7 @@ notes.post(
 	validator('json', createNoteSchema),
 	c => {
 		const data = c.req.valid('json')
-		const note = db.createNote(data)
+		const note = c.get('db').createNote(data)
 		return c.json(note, 201)
 	},
 )
@@ -165,7 +167,7 @@ notes.put(
 	c => {
 		const { id } = c.req.valid('param')
 		const data = c.req.valid('json')
-		const note = db.updateNote(id, data)
+		const note = c.get('db').updateNote(id, data)
 
 		if (!note) {
 			return c.json(
@@ -199,7 +201,7 @@ notes.delete(
 	validator('param', noteIdSchema),
 	c => {
 		const { id } = c.req.valid('param')
-		const success = db.deleteNote(id)
+		const success = c.get('db').deleteNote(id)
 
 		if (!success) {
 			return c.json(
