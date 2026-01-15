@@ -48,7 +48,7 @@ export const updateNoteSchema = z
 export type UpdateNoteRequest = z.infer<typeof updateNoteSchema>
 
 export const noteIdSchema = z.object({
-	id: z.string().uuid(),
+	id: z.uuid(),
 })
 
 export const searchQuerySchema = z.object({
@@ -77,13 +77,13 @@ export const listNotesQuerySchema = paginationQuerySchema
 		archived: z.coerce
 			.string()
 			.transform((v: string) => v === 'true')
-			.default('false')
+			.default(false)
 			.optional(),
 	})
 
 // Response validation schemas
 export const noteResponseSchema = z.object({
-	id: z.string().uuid(),
+	id: z.uuid(),
 	title: z.string(),
 	content: z.string(),
 	createdAt: z.date(),
