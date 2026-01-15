@@ -36,7 +36,7 @@ export const updateNoteSchema = z
 		archived: z.boolean().optional(),
 	})
 	.refine(
-		(data: any) =>
+		data =>
 			data.title !== undefined ||
 			data.content !== undefined ||
 			data.archived !== undefined,

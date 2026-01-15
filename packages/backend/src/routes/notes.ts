@@ -30,7 +30,7 @@ notes.get(
 		},
 	}),
 	validator('query', listNotesQuerySchema),
-	(c: any) => {
+	c => {
 		const query = c.req.valid('query')
 		const result = db.getNotes({
 			archived: query.archived,
@@ -65,7 +65,7 @@ notes.get(
 		},
 	}),
 	validator('query', searchQuerySchema),
-	(c: any) => {
+	c => {
 		const query = c.req.valid('query')
 		const result = db.searchNotes(query.q, query.limit, query.offset)
 
@@ -98,7 +98,7 @@ notes.get(
 		},
 	}),
 	validator('param', noteIdSchema),
-	(c: any) => {
+	c => {
 		const { id } = c.req.valid('param')
 		const note = db.getNoteById(id)
 
@@ -134,7 +134,7 @@ notes.post(
 		},
 	}),
 	validator('json', createNoteSchema),
-	(c: any) => {
+	c => {
 		const data = c.req.valid('json')
 		const note = db.createNote(data)
 		return c.json(note, 201)
@@ -162,7 +162,7 @@ notes.put(
 	}),
 	validator('param', noteIdSchema),
 	validator('json', updateNoteSchema),
-	(c: any) => {
+	c => {
 		const { id } = c.req.valid('param')
 		const data = c.req.valid('json')
 		const note = db.updateNote(id, data)
@@ -197,7 +197,7 @@ notes.delete(
 		},
 	}),
 	validator('param', noteIdSchema),
-	(c: any) => {
+	c => {
 		const { id } = c.req.valid('param')
 		const success = db.deleteNote(id)
 

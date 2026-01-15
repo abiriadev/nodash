@@ -42,7 +42,7 @@ app.get(
 	}),
 )
 
-app.get('/', (c: any) => c.text('nodash API is running'))
+app.get('/', c => c.text('nodash API is running'))
 
 const port = 8080
 console.log(`Server is running on port ${port}`)
