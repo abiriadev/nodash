@@ -1,4 +1,4 @@
-import { Hono, type Env } from 'hono'
+import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { swaggerUI } from '@hono/swagger-ui'
@@ -6,12 +6,7 @@ import { serve } from '@hono/node-server'
 import { openAPIRouteHandler } from 'hono-openapi'
 import { Db } from './db/db.js'
 import notes from './routes/notes.js'
-
-interface InjectedEnv extends Env {
-	Variables: {
-		db: Db
-	}
-}
+import type { InjectedEnv } from './env.js'
 
 const app = new Hono<InjectedEnv>()
 

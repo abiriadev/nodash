@@ -1,6 +1,5 @@
 import { Hono } from 'hono'
 import { describeRoute, resolver, validator } from 'hono-openapi'
-import type { Db } from '../db/db.js'
 import {
 	createNoteSchema,
 	updateNoteSchema,
@@ -10,8 +9,9 @@ import {
 	noteResponseSchema,
 	notesListResponseSchema,
 } from '../types/note.schema.js'
+import type { InjectedEnv } from '@/env.js'
 
-const notes = new Hono<{ Variables: { db: Db } }>()
+const notes = new Hono<InjectedEnv>()
 
 // List all notes
 notes.get(
