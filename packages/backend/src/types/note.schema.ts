@@ -72,7 +72,7 @@ export const sortQuerySchema = z.object({
 })
 
 export const listNotesQuerySchema = paginationQuerySchema
-	.merge(sortQuerySchema)
+	.extend(sortQuerySchema)
 	.extend({
 		archived: z.coerce
 			.string()
