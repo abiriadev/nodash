@@ -16,8 +16,8 @@ export interface NoteRow {
 	id: string
 	title: string
 	content: string
-	created_at: number
-	updated_at: number
+	created_at: string
+	updated_at: string
 	archived: number // SQLite stores boolean as 0/1
 }
 
