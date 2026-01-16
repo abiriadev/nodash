@@ -110,6 +110,8 @@ export const paginatedResponseSchema = <T extends z.ZodTypeAny>(
 export const notesListResponseSchema =
 	paginatedResponseSchema(noteResponseSchema)
 
+export type NotesListResponse = z.infer<typeof notesListResponseSchema>
+
 export interface ErrorResponse {
 	error: string
 	message: string
