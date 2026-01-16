@@ -162,7 +162,7 @@ export class Db {
 		if (!existing) return null
 
 		const updates: string[] = []
-		const params: any[] = []
+		const params: unknown[] = []
 
 		if (data.title !== undefined) {
 			updates.push(`"title" = ?`)
@@ -181,16 +181,17 @@ export class Db {
 
 		params.push(id)
 
-		await this.binding.run(
+		const updatedNoteResult = (await this.binding.get(
 			sql`
 			update "notes"
 			set ${updates.join(', ')}
 			where "id" = ?
+			returning *
 			`,
 			...params,
-		)
+		)) as NoteRow | undefined
 
-		return this.getNoteById(id)
+		return updatedNoteResult ? this.mapRowToNote(updatedNoteResult) : null
 	}
 
 	// Delete note by id.
