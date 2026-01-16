@@ -17,37 +17,37 @@ export class Db {
 
 	public async initSchema() {
 		await this.binding.exec(sql`
-    CREATE TABLE IF NOT EXISTS notes (
-      id TEXT PRIMARY KEY,
-      title TEXT NOT NULL,
-      content TEXT NOT NULL,
-      created_at INTEGER NOT NULL,
-      updated_at INTEGER NOT NULL,
-      archived INTEGER NOT NULL DEFAULT 0
+    create table if not exists notes (
+      id text primary key,
+      title text not null,
+      content text not null,
+      created_at integer not null,
+      updated_at integer not null,
+      archived integer not null default 0
     );
 
-    CREATE INDEX IF NOT EXISTS idx_notes_title ON notes(title);
-    CREATE INDEX IF NOT EXISTS idx_notes_archived ON notes(archived);
-    CREATE INDEX IF NOT EXISTS idx_notes_updated_at ON notes(updated_at DESC);
+    create index if not exists idx_notes_title on notes(title);
+    create index if not exists idx_notes_archived on notes(archived);
+    create index if not exists idx_notes_updated_at on notes(updated_at desc);
 
-    CREATE VIRTUAL TABLE IF NOT EXISTS notes_fts USING fts5(
+    create virtual table if not exists notes_fts using fts5(
       title,
       content,
       content=notes,
       content_rowid=rowid
     );
 
-    CREATE TRIGGER IF NOT EXISTS notes_fts_insert AFTER INSERT ON notes BEGIN
-      INSERT INTO notes_fts(rowid, title, content) VALUES (new.rowid, new.title, new.content);
-    END;
+    create trigger if not exists notes_fts_insert after insert on notes begin
+      insert into notes_fts(rowid, title, content) values (new.rowid, new.title, new.content);
+    end;
 
-    CREATE TRIGGER IF NOT EXISTS notes_fts_update AFTER UPDATE ON notes BEGIN
-      UPDATE notes_fts SET title = new.title, content = new.content WHERE rowid = new.rowid;
-    END;
+    create trigger if not exists notes_fts_update after update on notes begin
+      update notes_fts set title = new.title, content = new.content where rowid = new.rowid;
+    end;
 
-    CREATE TRIGGER IF NOT EXISTS notes_fts_delete AFTER DELETE ON notes BEGIN
-      DELETE FROM notes_fts WHERE rowid = old.rowid;
-    END;
+    create trigger if not exists notes_fts_delete after delete on notes begin
+      delete from notes_fts where rowid = old.rowid;
+    end;
   `)
 	}
 
@@ -87,14 +87,14 @@ export class Db {
 
 		const archivedVal = archived ? 1 : 0
 		const rows = (await this.binding.all(
-			sql`SELECT * FROM notes WHERE archived = ? ORDER BY ${dbSortBy} ${sortOrder} LIMIT ? OFFSET ?`,
+			sql`select * from notes where archived = ? order by ${dbSortBy} ${sortOrder} limit ? offset ?`,
 			archivedVal,
 			limit,
 			offset,
 		)) as NoteRow[]
 
 		const totalResult = (await this.binding.get(
-			sql`SELECT COUNT(*) as count FROM notes WHERE archived = ?`,
+			sql`select count(*) as count from notes where archived = ?`,
 			archivedVal,
 		)) as { count: number } | undefined
 
@@ -106,7 +106,7 @@ export class Db {
 
 	public async getNoteById(id: string): Promise<Note | null> {
 		const row = (await this.binding.get(
-			sql`SELECT * FROM notes WHERE id = ?`,
+			sql`select * from notes where id = ?`,
 			id,
 		)) as NoteRow | undefined
 		return row ? this.mapRowToNote(row) : null
@@ -124,7 +124,7 @@ export class Db {
 		}
 
 		await this.binding.run(
-			sql`INSERT INTO notes (id, title, content, created_at, updated_at, archived) VALUES (?, ?, ?, ?, ?, ?)`,
+			sql`insert into notes (id, title, content, created_at, updated_at, archived) values (?, ?, ?, ?, ?, ?)`,
 			note.id,
 			note.title,
 			note.content,
@@ -166,7 +166,7 @@ export class Db {
 		params.push(id)
 
 		await this.binding.run(
-			sql`UPDATE notes SET ${updates.join(', ')} WHERE id = ?`,
+			sql`update notes set ${updates.join(', ')} where id = ?`,
 			...params,
 		)
 
@@ -175,7 +175,7 @@ export class Db {
 
 	public async deleteNote(id: string): Promise<boolean> {
 		const result = await this.binding.run(
-			sql`DELETE FROM notes WHERE id = ?`,
+			sql`delete from notes where id = ?`,
 			id,
 		)
 		return result.changes > 0
@@ -188,11 +188,11 @@ export class Db {
 	): Promise<{ data: Note[]; total: number }> {
 		const rows = (await this.binding.all(
 			sql`
-    SELECT n.* FROM notes n
-    JOIN notes_fts f ON n.rowid = f.rowid
-    WHERE notes_fts MATCH ? AND n.archived = 0
-    ORDER BY rank
-    LIMIT ? OFFSET ?
+    select n.* from notes n
+    join notes_fts f on n.rowid = f.rowid
+    where notes_fts match ? and n.archived = 0
+    order by rank
+    limit ? offset ?
   `,
 			query,
 			limit,
@@ -201,9 +201,9 @@ export class Db {
 
 		const totalResult = (await this.binding.get(
 			sql`
-    SELECT COUNT(*) as count FROM notes n
-    JOIN notes_fts f ON n.rowid = f.rowid
-    WHERE notes_fts MATCH ? AND n.archived = 0
+    select count(*) as count from notes n
+    join notes_fts f on n.rowid = f.rowid
+    where notes_fts match ? and n.archived = 0
   `,
 			query,
 		)) as { count: number } | undefined
