@@ -1,21 +1,5 @@
 import type { DbBinding } from './interface.js'
 
-/**
- * Minimal interface for D1 database object to avoid hard dependency
- * on @cloudflare/workers-types in the backend package if not installed.
- */
-interface D1Database {
-	prepare(sql: string): D1PreparedStatement
-	exec(sql: string): Promise<any>
-}
-
-interface D1PreparedStatement {
-	bind(...params: any[]): D1PreparedStatement
-	all<T>(): Promise<{ results: T[] }>
-	first<T>(): Promise<T | null>
-	run(): Promise<{ meta: { changes?: number } }>
-}
-
 export class D1Binding implements DbBinding {
 	constructor(private db: D1Database) {}
 

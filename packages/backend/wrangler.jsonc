@@ -9,8 +9,8 @@
 	"d1_databases": [
 		{
 			"binding": "DB",
-			"database_name": "nodash-db",
-			"database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID",
+			"database_name": "nodash",
+			"database_id": "74be722a-c86c-4cdb-b816-3f13d12f2cf3",
 		},
 	],
 	"observability": {
