@@ -12,7 +12,10 @@ import type { InjectedEnv } from './env.js'
 const app = new Hono<InjectedEnv>()
 
 // Initialize database
+// Uses BetterSqlite3Binding for local development
 const db = new Db(new BetterSqlite3Binding('notes.db'))
+// D1 example:
+// const db = new Db(new D1Binding(env.DB));
 
 // Initialize schema (in a real production app, this might be a migration)
 // For local development, we can do it on startup
