@@ -6,6 +6,7 @@ import type {
 	CreateNoteRequest,
 	UpdateNoteRequest,
 } from '@/types/note.schema.js'
+import { sql } from '@/utils.js'
 
 export class Db {
 	constructor(private binding: DbBinding) {}
@@ -15,7 +16,7 @@ export class Db {
 	}
 
 	public async initSchema() {
-		await this.binding.exec(`
+		await this.binding.exec(sql`
     CREATE TABLE IF NOT EXISTS notes (
       id TEXT PRIMARY KEY,
       title TEXT NOT NULL,
@@ -86,14 +87,14 @@ export class Db {
 
 		const archivedVal = archived ? 1 : 0
 		const rows = (await this.binding.all(
-			`SELECT * FROM notes WHERE archived = ? ORDER BY ${dbSortBy} ${sortOrder} LIMIT ? OFFSET ?`,
+			sql`SELECT * FROM notes WHERE archived = ? ORDER BY ${dbSortBy} ${sortOrder} LIMIT ? OFFSET ?`,
 			archivedVal,
 			limit,
 			offset,
 		)) as NoteRow[]
 
 		const totalResult = (await this.binding.get(
-			'SELECT COUNT(*) as count FROM notes WHERE archived = ?',
+			sql`SELECT COUNT(*) as count FROM notes WHERE archived = ?`,
 			archivedVal,
 		)) as { count: number } | undefined
 
@@ -105,7 +106,7 @@ export class Db {
 
 	public async getNoteById(id: string): Promise<Note | null> {
 		const row = (await this.binding.get(
-			'SELECT * FROM notes WHERE id = ?',
+			sql`SELECT * FROM notes WHERE id = ?`,
 			id,
 		)) as NoteRow | undefined
 		return row ? this.mapRowToNote(row) : null
@@ -123,7 +124,7 @@ export class Db {
 		}
 
 		await this.binding.run(
-			'INSERT INTO notes (id, title, content, created_at, updated_at, archived) VALUES (?, ?, ?, ?, ?, ?)',
+			sql`INSERT INTO notes (id, title, content, created_at, updated_at, archived) VALUES (?, ?, ?, ?, ?, ?)`,
 			note.id,
 			note.title,
 			note.content,
@@ -165,7 +166,7 @@ export class Db {
 		params.push(id)
 
 		await this.binding.run(
-			`UPDATE notes SET ${updates.join(', ')} WHERE id = ?`,
+			sql`UPDATE notes SET ${updates.join(', ')} WHERE id = ?`,
 			...params,
 		)
 
@@ -174,7 +175,7 @@ export class Db {
 
 	public async deleteNote(id: string): Promise<boolean> {
 		const result = await this.binding.run(
-			'DELETE FROM notes WHERE id = ?',
+			sql`DELETE FROM notes WHERE id = ?`,
 			id,
 		)
 		return result.changes > 0
@@ -186,7 +187,7 @@ export class Db {
 		offset: number = 0,
 	): Promise<{ data: Note[]; total: number }> {
 		const rows = (await this.binding.all(
-			`
+			sql`
     SELECT n.* FROM notes n
     JOIN notes_fts f ON n.rowid = f.rowid
     WHERE notes_fts MATCH ? AND n.archived = 0
@@ -199,7 +200,7 @@ export class Db {
 		)) as NoteRow[]
 
 		const totalResult = (await this.binding.get(
-			`
+			sql`
     SELECT COUNT(*) as count FROM notes n
     JOIN notes_fts f ON n.rowid = f.rowid
     WHERE notes_fts MATCH ? AND n.archived = 0
