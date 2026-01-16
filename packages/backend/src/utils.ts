@@ -1,6 +1,8 @@
 import { zipWith } from 'es-toolkit'
 import { z } from 'zod'
 
+// zod v4 codec
+// https://zod.dev/codecs?id=isodatetimetodate
 export const isoDatetimeToDate = z.codec(z.iso.datetime(), z.date(), {
 	decode: isoString => new Date(isoString),
 	encode: date => date.toISOString(),
