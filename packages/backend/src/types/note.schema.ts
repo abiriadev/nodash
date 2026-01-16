@@ -21,9 +21,12 @@ export interface NoteRow {
 	archived: number // SQLite stores boolean as 0/1
 }
 
+// common title schema
+export const titleSchema = z.string().min(1).max(255)
+
 // Request validation schemas
 export const createNoteSchema = z.object({
-	title: z.string().min(1).max(255),
+	title: titleSchema,
 	content: z.string(),
 })
 
@@ -31,7 +34,7 @@ export type CreateNoteRequest = z.infer<typeof createNoteSchema>
 
 export const updateNoteSchema = z
 	.object({
-		title: z.string().min(1).max(255).optional(),
+		title: titleSchema.optional(),
 		content: z.string().optional(),
 		archived: z.boolean().optional(),
 	})
@@ -73,11 +76,11 @@ export const sortQuerySchema = z.object({
 })
 
 export const listNotesQuerySchema = paginationQuerySchema
-	.merge(sortQuerySchema)
+	.extend(sortQuerySchema.shape)
 	.extend({
 		archived: z.coerce
 			.string()
-			.transform((v: string) => v === 'true')
+			.transform(v => v === 'true')
 			.default(false)
 			.optional(),
 	})
@@ -85,7 +88,7 @@ export const listNotesQuerySchema = paginationQuerySchema
 // Response validation schemas
 export const noteResponseSchema = z.object({
 	id: z.uuid(),
-	title: z.string(),
+	title: titleSchema,
 	content: z.string(),
 	createdAt: isoDatetimeToDate,
 	updatedAt: isoDatetimeToDate,
