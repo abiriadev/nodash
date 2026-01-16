@@ -5,13 +5,18 @@ import { swaggerUI } from '@hono/swagger-ui'
 import { serve } from '@hono/node-server'
 import { openAPIRouteHandler } from 'hono-openapi'
 import { Db } from './db/db.js'
+import { BetterSqlite3Binding } from './db/better-sqlite3.js'
 import notes from './routes/notes.js'
 import type { InjectedEnv } from './env.js'
 
 const app = new Hono<InjectedEnv>()
 
 // Initialize database
-const db = new Db()
+const db = new Db(new BetterSqlite3Binding('notes.db'))
+
+// Initialize schema (in a real production app, this might be a migration)
+// For local development, we can do it on startup
+await db.initSchema()
 
 // Middleware
 app.use('*', logger())

@@ -1,5 +1,5 @@
-import Database from 'better-sqlite3'
 import { v4 as uuidv4 } from 'uuid'
+import type { DbBinding } from './interface.js'
 import type {
 	Note,
 	NoteRow,
@@ -8,24 +8,14 @@ import type {
 } from '../types/note.schema.js'
 
 export class Db {
-	private db: Database.Database
+	constructor(private binding: DbBinding) {}
 
-	constructor(dbPath: string = 'notes.db') {
-		this.db = new Database(dbPath)
-		this.db.pragma('journal_mode = WAL')
-		this.initSchema()
+	public transaction<T>(fn: () => T | Promise<T>): Promise<T> {
+		return this.binding.transaction(fn)
 	}
 
-	public close() {
-		this.db.close()
-	}
-
-	public transaction<T>(fn: () => T): T {
-		return this.db.transaction(fn)()
-	}
-
-	private initSchema() {
-		this.db.exec(`
+	public async initSchema() {
+		await this.binding.exec(`
     CREATE TABLE IF NOT EXISTS notes (
       id TEXT PRIMARY KEY,
       title TEXT NOT NULL,
@@ -71,7 +61,7 @@ export class Db {
 		}
 	}
 
-	public getNotes(
+	public async getNotes(
 		options: {
 			archived?: boolean
 			limit?: number
@@ -79,7 +69,7 @@ export class Db {
 			sortBy?: string
 			sortOrder?: 'asc' | 'desc'
 		} = {},
-	): { data: Note[]; total: number } {
+	): Promise<{ data: Note[]; total: number }> {
 		const {
 			archived = false,
 			limit = 100,
@@ -95,34 +85,33 @@ export class Db {
 		)
 
 		const archivedVal = archived ? 1 : 0
-		const rows = this.db
-			.prepare(
-				`SELECT * FROM notes WHERE archived = ? ORDER BY ${dbSortBy} ${sortOrder} LIMIT ? OFFSET ?`,
-			)
-			.all(archivedVal, limit, offset) as NoteRow[]
+		const rows = (await this.binding.all(
+			`SELECT * FROM notes WHERE archived = ? ORDER BY ${dbSortBy} ${sortOrder} LIMIT ? OFFSET ?`,
+			archivedVal,
+			limit,
+			offset,
+		)) as NoteRow[]
 
-		const total = (
-			this.db
-				.prepare(
-					'SELECT COUNT(*) as count FROM notes WHERE archived = ?',
-				)
-				.get(archivedVal) as { count: number }
-		).count
+		const totalResult = (await this.binding.get(
+			'SELECT COUNT(*) as count FROM notes WHERE archived = ?',
+			archivedVal,
+		)) as { count: number } | undefined
 
 		return {
 			data: rows.map(row => this.mapRowToNote(row)),
-			total,
+			total: totalResult?.count ?? 0,
 		}
 	}
 
-	public getNoteById(id: string): Note | null {
-		const row = this.db
-			.prepare('SELECT * FROM notes WHERE id = ?')
-			.get(id) as NoteRow | undefined
+	public async getNoteById(id: string): Promise<Note | null> {
+		const row = (await this.binding.get(
+			'SELECT * FROM notes WHERE id = ?',
+			id,
+		)) as NoteRow | undefined
 		return row ? this.mapRowToNote(row) : null
 	}
 
-	public createNote(data: CreateNoteRequest): Note {
+	public async createNote(data: CreateNoteRequest): Promise<Note> {
 		const now = Date.now()
 		const note: NoteRow = {
 			id: uuidv4(),
@@ -133,24 +122,24 @@ export class Db {
 			archived: 0,
 		}
 
-		this.db
-			.prepare(
-				'INSERT INTO notes (id, title, content, created_at, updated_at, archived) VALUES (?, ?, ?, ?, ?, ?)',
-			)
-			.run(
-				note.id,
-				note.title,
-				note.content,
-				note.created_at,
-				note.updated_at,
-				note.archived,
-			)
+		await this.binding.run(
+			'INSERT INTO notes (id, title, content, created_at, updated_at, archived) VALUES (?, ?, ?, ?, ?, ?)',
+			note.id,
+			note.title,
+			note.content,
+			note.created_at,
+			note.updated_at,
+			note.archived,
+		)
 
 		return this.mapRowToNote(note)
 	}
 
-	public updateNote(id: string, data: UpdateNoteRequest): Note | null {
-		const existing = this.getNoteById(id)
+	public async updateNote(
+		id: string,
+		data: UpdateNoteRequest,
+	): Promise<Note | null> {
+		const existing = await this.getNoteById(id)
 		if (!existing) return null
 
 		const now = Date.now()
@@ -175,50 +164,52 @@ export class Db {
 
 		params.push(id)
 
-		this.db
-			.prepare(`UPDATE notes SET ${updates.join(', ')} WHERE id = ?`)
-			.run(...params)
+		await this.binding.run(
+			`UPDATE notes SET ${updates.join(', ')} WHERE id = ?`,
+			...params,
+		)
 
 		return this.getNoteById(id)
 	}
 
-	public deleteNote(id: string): boolean {
-		const result = this.db.prepare('DELETE FROM notes WHERE id = ?').run(id)
+	public async deleteNote(id: string): Promise<boolean> {
+		const result = await this.binding.run(
+			'DELETE FROM notes WHERE id = ?',
+			id,
+		)
 		return result.changes > 0
 	}
 
-	public searchNotes(
+	public async searchNotes(
 		query: string,
 		limit: number = 50,
 		offset: number = 0,
-	): { data: Note[]; total: number } {
-		const rows = this.db
-			.prepare(
-				`
+	): Promise<{ data: Note[]; total: number }> {
+		const rows = (await this.binding.all(
+			`
     SELECT n.* FROM notes n
     JOIN notes_fts f ON n.rowid = f.rowid
     WHERE notes_fts MATCH ? AND n.archived = 0
     ORDER BY rank
     LIMIT ? OFFSET ?
   `,
-			)
-			.all(query, limit, offset) as NoteRow[]
+			query,
+			limit,
+			offset,
+		)) as NoteRow[]
 
-		const total = (
-			this.db
-				.prepare(
-					`
+		const totalResult = (await this.binding.get(
+			`
     SELECT COUNT(*) as count FROM notes n
     JOIN notes_fts f ON n.rowid = f.rowid
     WHERE notes_fts MATCH ? AND n.archived = 0
   `,
-				)
-				.get(query) as { count: number }
-		).count
+			query,
+		)) as { count: number } | undefined
 
 		return {
 			data: rows.map(row => this.mapRowToNote(row)),
-			total,
+			total: totalResult?.count ?? 0,
 		}
 	}
 }

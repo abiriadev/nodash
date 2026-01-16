@@ -30,9 +30,9 @@ notes.get(
 		},
 	}),
 	validator('query', listNotesQuerySchema),
-	c => {
+	async c => {
 		const query = c.req.valid('query')
-		const result = c.get('db').getNotes({
+		const result = await c.get('db').getNotes({
 			archived: query.archived,
 			limit: query.limit,
 			offset: query.offset,
@@ -65,9 +65,9 @@ notes.get(
 		},
 	}),
 	validator('query', searchQuerySchema),
-	c => {
+	async c => {
 		const query = c.req.valid('query')
-		const result = c
+		const result = await c
 			.get('db')
 			.searchNotes(query.q, query.limit, query.offset)
 
@@ -100,9 +100,9 @@ notes.get(
 		},
 	}),
 	validator('param', noteIdSchema),
-	c => {
+	async c => {
 		const { id } = c.req.valid('param')
-		const note = c.get('db').getNoteById(id)
+		const note = await c.get('db').getNoteById(id)
 
 		if (!note) {
 			return c.json(
@@ -136,9 +136,9 @@ notes.post(
 		},
 	}),
 	validator('json', createNoteSchema),
-	c => {
+	async c => {
 		const data = c.req.valid('json')
-		const note = c.get('db').createNote(data)
+		const note = await c.get('db').createNote(data)
 		return c.json(note, 201)
 	},
 )
@@ -164,10 +164,10 @@ notes.put(
 	}),
 	validator('param', noteIdSchema),
 	validator('json', updateNoteSchema),
-	c => {
+	async c => {
 		const { id } = c.req.valid('param')
 		const data = c.req.valid('json')
-		const note = c.get('db').updateNote(id, data)
+		const note = await c.get('db').updateNote(id, data)
 
 		if (!note) {
 			return c.json(
@@ -199,9 +199,9 @@ notes.delete(
 		},
 	}),
 	validator('param', noteIdSchema),
-	c => {
+	async c => {
 		const { id } = c.req.valid('param')
-		const success = c.get('db').deleteNote(id)
+		const success = await c.get('db').deleteNote(id)
 
 		if (!success) {
 			return c.json(
