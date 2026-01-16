@@ -7,7 +7,8 @@
 		"build": "swc src -d dist --strip-leading-paths",
 		"build:type": "tsc",
 		"start": "node --enable-source-maps --env-file .env dist/index.js",
-		"dev": "tsx --env-file .env ./src/index.ts"
+		"dev": "tsx --env-file .env ./src/index.ts",
+		"test": "vitest run"
 	},
 	"dependencies": {
 		"@hono/node-server": "^1.19.9",
@@ -28,6 +29,7 @@
 		"@types/node": "^25.0.8",
 		"@types/uuid": "^11.0.0",
 		"tsx": "^4.21.0",
-		"typescript": "^5.9.3"
+		"typescript": "^5.9.3",
+		"vitest": "^4.0.17"
 	}
 }
