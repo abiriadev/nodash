@@ -8,6 +8,11 @@ import type {
 } from '@/types/note.schema.js'
 import { sql } from '@/utils.js'
 
+type Paginated<T> = {
+	data: T[]
+	total: number
+}
+
 export class Db {
 	constructor(private binding: DbBinding) {}
 
@@ -81,7 +86,7 @@ export class Db {
 			sortBy?: string
 			sortOrder?: 'asc' | 'desc'
 		} = {},
-	): Promise<{ data: Note[]; total: number }> {
+	): Promise<Paginated<Note>> {
 		const {
 			archived = false,
 			limit = 100,
@@ -125,7 +130,7 @@ export class Db {
 	}
 
 	public async getNoteById(id: string): Promise<Note | null> {
-		const row = (await this.binding.get(
+		const noteResult = (await this.binding.get(
 			sql`
 			select *
 			from "notes"
@@ -134,13 +139,13 @@ export class Db {
 			id,
 		)) as NoteRow | undefined
 
-		return row ? this.mapRowToNote(row) : null
+		return noteResult ? this.mapRowToNote(noteResult) : null
 	}
 
 	public async createNote(data: CreateNoteRequest): Promise<Note> {
 		const id = uuidv4()
 
-		const newNote = (await this.binding.get(
+		const newNoteResult = (await this.binding.get(
 			sql`
 			insert into "notes" ("id", "title", "content")
 			values (?, ?, ?)
@@ -151,7 +156,7 @@ export class Db {
 			data.content,
 		)) as NoteRow
 
-		return this.mapRowToNote(newNote)
+		return this.mapRowToNote(newNoteResult)
 	}
 
 	public async updateNote(
@@ -214,7 +219,7 @@ export class Db {
 		query: string,
 		limit: number = 50,
 		offset: number = 0,
-	): Promise<{ data: Note[]; total: number }> {
+	): Promise<Paginated<Note>> {
 		const rows = (await this.binding.all(
 			sql`
 			select "n".*
