@@ -193,16 +193,20 @@ export class Db {
 		return this.getNoteById(id)
 	}
 
-	public async deleteNote(id: string): Promise<boolean> {
-		const result = await this.binding.run(
+	// Delete note by id.
+	// If note is deleted, return deleted note.
+	// If note is not found, return null.
+	public async deleteNote(id: string): Promise<Note | null> {
+		const noteResult = (await this.binding.get(
 			sql`
 			delete from "notes"
 			where "id" = ?
+			returning *
 			`,
 			id,
-		)
+		)) as NoteRow | undefined
 
-		return result.changes > 0
+		return noteResult ? this.mapRowToNote(noteResult) : null
 	}
 
 	public async searchNotes(

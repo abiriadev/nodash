@@ -201,10 +201,10 @@ notes.delete(
 	validator('param', noteIdSchema),
 	async c => {
 		const { id } = c.req.valid('param')
-		const success = await c.get('db').deleteNote(id)
+		const noteResult = await c.get('db').deleteNote(id)
 
-		if (!success) {
-			return c.json(
+		if (noteResult === null)
+			c.json(
 				{
 					error: 'NotFound',
 					message: `Note with id '${id}' not found`,
@@ -212,8 +212,9 @@ notes.delete(
 				},
 				404,
 			)
-		}
 
+		// we don't need to return deleted note now.
+		// simply discard the result, and return null with correct status code
 		return c.body(null, 204)
 	},
 )
