@@ -34,7 +34,7 @@ export class BetterSqlite3Binding implements DbBinding {
 		return txn() as T
 	}
 
-	close() {
+	async close() {
 		this.db.close()
 	}
 }

@@ -14,4 +14,7 @@ export interface DbBinding {
 
 	// Execute a transaction
 	transaction<T>(fn: () => T | Promise<T>): Promise<T>
+
+	// Free resources (close connection, free memory, etc.)
+	close(): Promise<void>
 }

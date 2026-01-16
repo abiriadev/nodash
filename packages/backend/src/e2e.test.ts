@@ -5,19 +5,18 @@ import { BetterSqlite3Binding } from './db/better-sqlite3.js'
 
 describe('Notes API E2E', () => {
 	let db: Db
-	let binding: BetterSqlite3Binding
 	let app: ReturnType<typeof createApp>
 
 	beforeEach(async () => {
 		// Use in-memory database for tests
-		binding = new BetterSqlite3Binding(':memory:')
+		const binding = new BetterSqlite3Binding(':memory:')
 		db = new Db(binding)
 		await db.initSchema()
 		app = createApp(db)
 	})
 
 	afterEach(() => {
-		binding.close()
+		db.close()
 	})
 
 	it('should return 200 OK on /', async () => {

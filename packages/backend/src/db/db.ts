@@ -15,6 +15,10 @@ export class Db {
 		return this.binding.transaction(fn)
 	}
 
+	public async close(): Promise<void> {
+		await this.binding.close()
+	}
+
 	public async initSchema() {
 		await this.binding.exec(sql`
     create table if not exists notes (

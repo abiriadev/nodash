@@ -55,4 +55,9 @@ export class D1Binding implements DbBinding {
 		// to support Batching which both BetterSqlite3 and D1 support.
 		return await fn()
 	}
+
+	async close() {
+		// D1 doesn't have a close method
+		// do nothing.
+	}
 }
