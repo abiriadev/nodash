@@ -6,8 +6,9 @@ import { openAPIRouteHandler } from 'hono-openapi'
 import notes from './routes/notes.js'
 import type { InjectedEnv } from './env.js'
 import type { Db } from './db/db.js'
+import type { Config } from './config.js'
 
-export function createApp(db: Db) {
+export function createApp(config: Config, db: Db) {
 	const app = new Hono<InjectedEnv>()
 
 	// Middleware
@@ -15,6 +16,7 @@ export function createApp(db: Db) {
 	app.use('*', cors())
 	app.use('*', async (c, next) => {
 		c.set('db', db)
+		c.set('config', config)
 		await next()
 	})
 
@@ -31,12 +33,12 @@ export function createApp(db: Db) {
 			documentation: {
 				info: {
 					title: 'nodash API',
-					version: '1.0.0',
+					version: config.VERSION,
 					description: 'API for managing notes with FTS5 search',
 				},
 				servers: [
 					{
-						url: 'http://localhost:8080',
+						url: `http://localhost:${config.PORT}`,
 						description: 'Development Server',
 					},
 				],
@@ -44,7 +46,12 @@ export function createApp(db: Db) {
 		}),
 	)
 
-	app.get('/', c => c.text('nodash API is running'))
+	app.get('/', c =>
+		c.json({
+			version: config.VERSION,
+			status: 'operational',
+		}),
+	)
 
 	return app
 }

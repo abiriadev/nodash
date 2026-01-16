@@ -2,17 +2,23 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { createApp } from './app.js'
 import { Db } from './db/db.js'
 import { BetterSqlite3Binding } from './db/better-sqlite3.js'
+import { configSchema } from './config.js'
 
 describe('Notes API E2E', () => {
 	let db: Db
 	let app: ReturnType<typeof createApp>
 
 	beforeEach(async () => {
+		const config = configSchema.parse({
+			PORT: 8080,
+			VERSION: 'dev',
+		})
+
 		// Use in-memory database for tests
 		const binding = new BetterSqlite3Binding(':memory:')
 		db = new Db(binding)
 		await db.initSchema()
-		app = createApp(db)
+		app = createApp(config, db)
 	})
 
 	afterEach(() => {
@@ -22,7 +28,10 @@ describe('Notes API E2E', () => {
 	it('should return 200 OK on /', async () => {
 		const res = await app.request('/')
 		expect(res.status).toBe(200)
-		expect(await res.text()).toBe('nodash API is running')
+		expect(await res.json()).toMatchObject({
+			version: 'dev',
+			status: 'operational',
+		})
 	})
 
 	it('should create a new note', async () => {
