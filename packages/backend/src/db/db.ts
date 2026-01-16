@@ -5,7 +5,7 @@ import type {
 	NoteRow,
 	CreateNoteRequest,
 	UpdateNoteRequest,
-} from '../types/note.schema.js'
+} from '@/types/note.schema.js'
 
 export class Db {
 	constructor(private binding: DbBinding) {}

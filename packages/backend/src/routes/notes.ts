@@ -8,7 +8,7 @@ import {
 	listNotesQuerySchema,
 	noteResponseSchema,
 	notesListResponseSchema,
-} from '../types/note.schema.js'
+} from '@/types/note.schema.js'
 import type { InjectedEnv } from '@/env.js'
 
 const notes = new Hono<InjectedEnv>()
