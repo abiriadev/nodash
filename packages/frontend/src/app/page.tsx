@@ -42,16 +42,19 @@ function HomeContent() {
 				const response = await api.searchNotes(debouncedSearch)
 				result = response.data
 			} else {
-				result = await api.getNotes({
+				const response = await api.getNotes({
 					archived: isArchivedView,
 					sortBy: 'updatedAt',
 					sortOrder: 'desc',
 				})
+				result = response.data
 			}
 
 			if (debouncedSearch) {
 				result = result.filter(n => !!n.archived === isArchivedView)
 			}
+
+			console.log(result)
 
 			setNotes(result)
 		} catch (error) {

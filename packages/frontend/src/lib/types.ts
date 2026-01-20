@@ -18,11 +18,14 @@ export interface UpdateNoteDto {
 	archived?: boolean
 }
 
-export interface SearchResponse {
-	data: Note[]
+export interface PaginatedResponse<T> {
+	data: T[]
 	total: number
 	limit: number
 	offset: number
+}
+
+export interface SearchResponse extends PaginatedResponse<Note> {
 	query: string
 }
 

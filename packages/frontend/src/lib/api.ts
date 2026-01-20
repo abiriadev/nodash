@@ -1,6 +1,7 @@
 import type {
 	CreateNoteDto,
 	Note,
+	PaginatedResponse,
 	SearchResponse,
 	UpdateNoteDto,
 } from './types'
@@ -52,7 +53,7 @@ export const api = {
 		} = {},
 	) => {
 		const query = queryString.stringify(params)
-		return fetcher<Note[]>(`/notes?${query}`)
+		return fetcher<PaginatedResponse<Note>>(`/notes?${query}`)
 	},
 
 	getNote: async (id: string) => {
