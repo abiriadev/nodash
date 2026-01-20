@@ -4,13 +4,13 @@
 	"main": "src/worker.ts",
 	"compatibility_date": "2026-01-16",
 	"vars": {
-		"VERSION": "1.0.1",
+		"VERSION": "1.0.2",
 	},
 	"d1_databases": [
 		{
 			"binding": "DB",
 			"database_name": "nodash",
-			"database_id": "74be722a-c86c-4cdb-b816-3f13d12f2cf3",
+			"database_id": "8b89ede4-5473-46d1-9efb-fc74c67f8fb0",
 		},
 	],
 	"observability": {
