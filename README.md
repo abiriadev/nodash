@@ -7,8 +7,17 @@ A monorepo project with frontend and backend packages managed by pnpm workspaces
 ```
 nodash/
 ├── packages/
-│   ├── backend/     # Backend application
-│   └── frontend/    # Frontend application
+│   ├── backend/
+│   │   ├── src/
+│   │   │   ├── db/
+│   │   │   ├── routes/
+│   │   │   └── types/
+│   │   ├── tsconfig.json
+│   │   └── package.json
+│   └── frontend/
+│       ├── src/
+│       ├── tsconfig.json
+│       └── package.json
 ├── pnpm-workspace.yaml
 └── package.json
 ```
