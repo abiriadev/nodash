@@ -30,8 +30,8 @@ export class Db {
 			"id" text primary key,
 			"title" text not null,
 			"content" text not null,
-			"created_at" text not null default current_datetime,
-			"updated_at" text not null default current_datetime,
+			"created_at" text not null default current_timestamp,
+			"updated_at" text not null default current_timestamp,
 			"archived" integer not null default 0
 		);
 
