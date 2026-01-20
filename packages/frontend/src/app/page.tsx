@@ -72,7 +72,7 @@ function HomeContent() {
 	const handleCreateNote = async () => {
 		try {
 			const newNote = await api.createNote({
-				title: '',
+				title: 'Untitled',
 				content: '',
 			})
 			await fetchNotes()
