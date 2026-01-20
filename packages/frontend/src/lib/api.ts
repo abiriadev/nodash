@@ -7,7 +7,7 @@ import type {
 import queryString from 'query-string'
 
 const API_BASE_URL =
-	process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787/api'
+	process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api'
 
 async function fetcher<T>(
 	endpoint: string,
