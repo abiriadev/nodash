@@ -45,7 +45,7 @@ function HomeContent() {
 				result = await api.getNotes({
 					archived: isArchivedView,
 					sortBy: 'updatedAt',
-					sortOrder: 'DESC',
+					sortOrder: 'desc',
 				})
 			}
 
