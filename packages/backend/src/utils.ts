@@ -11,4 +11,8 @@ export const isoDatetimeToDate = z.codec(z.iso.datetime(), z.date(), {
 // SQL syntax highlight helper method.
 // It actually does nothing.
 export const sql = (q: TemplateStringsArray, ...values: string[]) =>
-	zipWith(q, values, (a, b) => a + (b ?? '')).join('')
+	zipWith(q, values, (a, b) => a + (b ?? ''))
+		.join('')
+		.split('\n')
+		.join(' ')
+		.trim()
