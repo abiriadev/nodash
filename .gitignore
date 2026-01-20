@@ -10,3 +10,5 @@ dist
 *.db-shm
 *.db-wal
 .wrangler
+.next
+*.tsbuildinfo
