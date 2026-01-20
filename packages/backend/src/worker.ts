@@ -8,6 +8,7 @@ export default {
 		// injection setup
 		const config = configSchema.parse(env)
 		const db = new Db(new D1Binding(env.DB))
+		await db.initSchema()
 
 		// create app and handle request
 		const app = createApp(config, db)
