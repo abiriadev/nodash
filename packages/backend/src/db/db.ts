@@ -54,15 +54,17 @@ export class Db {
 
 		create trigger if not exists "notes_fts_update"
 		after update on "notes" begin
-			update "notes_fts"
-			set "title" = "new"."title", "content" = "new"."content"
-			where "rowid" = "new"."rowid";
+			insert into "notes_fts"("notes_fts", "rowid", "title", "content")
+			values ('delete', "old"."rowid", "old"."title", "old"."content");
+
+			insert into "notes_fts"("rowid", "title", "content")
+			values ("new"."rowid", "new"."title", "new"."content");
 		end;
 
 		create trigger if not exists "notes_fts_delete"
 		after delete on "notes" begin
-			delete from "notes_fts"
-			where "rowid" = "old"."rowid";
+			insert into "notes_fts"("notes_fts", "rowid", "title", "content")
+			values ('delete', "old"."rowid", "old"."title", "old"."content");
 		end;
 		`)
 	}
