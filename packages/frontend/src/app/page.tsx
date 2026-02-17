@@ -54,8 +54,6 @@ function HomeContent() {
 				result = result.filter(n => !!n.archived === isArchivedView)
 			}
 
-			console.log(result)
-
 			setNotes(result)
 		} catch (error) {
 			console.error('Failed to fetch notes:', error)

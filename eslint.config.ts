@@ -14,5 +14,15 @@ export default defineConfig([
 	tseslint.configs.recommended,
 	pluginReact.configs.flat.recommended,
 	pluginReact.configs.flat['jsx-runtime'],
-	globalIgnores(['**/.next', '**/out', '**/worker-configuration.d.ts']),
+	{
+		rules: {
+			'no-console': 'warn',
+		},
+	},
+	globalIgnores([
+		'**/dist',
+		'**/.next',
+		'**/out',
+		'**/worker-configuration.d.ts',
+	]),
 ])
