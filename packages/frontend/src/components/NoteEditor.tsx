@@ -2,14 +2,8 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import type { Note } from '@/lib/types'
-import {
-	Archive,
-	Trash2,
-	ArrowLeft,
-	RefreshCw,
-	ArchiveRestore,
-} from 'lucide-react'
-import { useEffect, useState, useRef } from 'react'
+import { Archive, Trash2, ArrowLeft, ArchiveRestore } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 

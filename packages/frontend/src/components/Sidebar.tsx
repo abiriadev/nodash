@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import type { Note } from '@/lib/types'
-import { formatDistanceToNow } from 'date-fns'
 
 // Fallback date formatter if date-fns not available or for simplicity
 const formatDate = (dateString: string) => {
@@ -11,7 +10,7 @@ const formatDate = (dateString: string) => {
 			month: 'short',
 			day: 'numeric',
 		})
-	} catch (e) {
+	} catch {
 		return ''
 	}
 }
