@@ -3,7 +3,7 @@ import type { DbBinding } from './interface.js'
 export class D1Binding implements DbBinding {
 	constructor(private db: D1Database) {}
 
-	async all<T>(sql: string, ...params: any[]): Promise<T[]> {
+	async all<T>(sql: string, ...params: unknown[]): Promise<T[]> {
 		const { results } = await this.db
 			.prepare(sql)
 			.bind(...params)
@@ -11,7 +11,7 @@ export class D1Binding implements DbBinding {
 		return results ?? []
 	}
 
-	async get<T>(sql: string, ...params: any[]): Promise<T | undefined> {
+	async get<T>(sql: string, ...params: unknown[]): Promise<T | undefined> {
 		const result = await this.db
 			.prepare(sql)
 			.bind(...params)
@@ -19,7 +19,7 @@ export class D1Binding implements DbBinding {
 		return result ?? undefined
 	}
 
-	async run(sql: string, ...params: any[]): Promise<{ changes: number }> {
+	async run(sql: string, ...params: unknown[]): Promise<{ changes: number }> {
 		const result = await this.db
 			.prepare(sql)
 			.bind(...params)

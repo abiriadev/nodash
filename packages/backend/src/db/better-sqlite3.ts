@@ -9,15 +9,15 @@ export class BetterSqlite3Binding implements DbBinding {
 		this.db.pragma('journal_mode = WAL')
 	}
 
-	async all<T>(sql: string, ...params: any[]): Promise<T[]> {
+	async all<T>(sql: string, ...params: unknown[]): Promise<T[]> {
 		return this.db.prepare(sql).all(...params) as T[]
 	}
 
-	async get<T>(sql: string, ...params: any[]): Promise<T | undefined> {
+	async get<T>(sql: string, ...params: unknown[]): Promise<T | undefined> {
 		return this.db.prepare(sql).get(...params) as T | undefined
 	}
 
-	async run(sql: string, ...params: any[]): Promise<{ changes: number }> {
+	async run(sql: string, ...params: unknown[]): Promise<{ changes: number }> {
 		const result = this.db.prepare(sql).run(...params)
 		return { changes: result.changes }
 	}
@@ -30,7 +30,7 @@ export class BetterSqlite3Binding implements DbBinding {
 		// better-sqlite3 transactions are synchronous
 		// if fn is async, this won't work as expected with better-sqlite3's .transaction()
 		// but we can just use the sync one if fn is sync
-		const txn = this.db.transaction(fn as any)
+		const txn = this.db.transaction(fn)
 		return txn() as T
 	}
 

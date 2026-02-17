@@ -4,7 +4,7 @@ import { Db } from './db/db.js'
 import { D1Binding } from './db/d1.js'
 
 export default {
-	async fetch(request: Request, env: Env, ctx: any) {
+	async fetch(request, env, ctx) {
 		// injection setup
 		const config = configSchema.parse(env)
 		const db = new Db(new D1Binding(env.DB))
@@ -14,4 +14,4 @@ export default {
 		const app = createApp(config, db)
 		return app.fetch(request, env, ctx)
 	},
-}
+} satisfies ExportedHandler<Env>
