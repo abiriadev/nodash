@@ -2,6 +2,7 @@
 const nextConfig = {
 	reactStrictMode: true,
 	transpilePackages: ['@nodash/backend'], // If we import types or code from backend later
+	output: 'export',
 }
 
 export default nextConfig
