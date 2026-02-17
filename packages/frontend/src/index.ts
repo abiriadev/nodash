@@ -1,2 +1,0 @@
-// Frontend entry point
-export {}
