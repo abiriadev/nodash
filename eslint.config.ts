@@ -16,7 +16,12 @@ export default defineConfig([
 	pluginReact.configs.flat['jsx-runtime'],
 	{
 		rules: {
-			'no-console': 'warn',
+			'no-console': [
+				"warn",
+				{
+					allow: ["error"]
+				}
+			],
 		},
 	},
 	globalIgnores([
